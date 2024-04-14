@@ -14,7 +14,7 @@ const fe_url = process.env.CLIENT_URL
 // middleware
 app.use(
   cors({
-    origin: fe_url,
+    origin: "*",
   })
 );
 app.use(express.json());
