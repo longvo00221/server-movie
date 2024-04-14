@@ -6,31 +6,36 @@ import "dotenv/config";
 import routes from "./src/routes/index.js";
 import mongoose from "mongoose";
 import compression from "compression";
-// import connectDatabase from './src/mongo/mongoDb.js'
+import bodyParser from "body-parser";
+import helmet from "helmet";
 
 const app = express();
-
-app.use(cors({
-  origin: "*",
-}));
+const fe_url = process.env.CLIENT_URL
+// middleware
+app.use(
+  cors({
+    origin: fe_url,
+  })
+);
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(helmet());
 app.use(compression());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-// connectDatabase()
-app.use("/api/v1", routes,cors({
-  origin: "*",
-}));
+app.use("/api/v1", routes);
 
 const port = process.env.PORT || 5000;
 
 const server = http.createServer(app);
-mongoose.connect(process.env.MONGODB_URL).then(() => {
-  console.log("db connected");
-  server.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
+try {
+  mongoose.connect(process.env.MONGODB_URL).then(() => {
+    console.log("db connected");
+    server.listen(port, () => {
+      console.log(`Server is listening on port ${port}`);
+    });
   });
-}).catch((err) => {
+} catch (error) {
   console.log({ err });
   process.exit(1);
-});
+}

@@ -11,10 +11,9 @@ const router = express.Router();
 router.post(
   "/signup",
   rateLimit({
-    windowMs: 15 * 60 * 1000, 
-    max: 5, 
-    standardHeaders: 'draft-7',
-    message: "Too many login attempts from this IP, please try again later"
+    windowMs: 60 * 60 * 1000, 
+    max: 100, 
+    message: "Too many accounts created from this IP, please try again after an hour"
   }),
   body("username")
     .exists().withMessage("username is required")
@@ -42,6 +41,11 @@ router.post(
 
 router.post(
   "/signin",
+  rateLimit({
+    windowMs: 60 * 60 * 1000, 
+    max: 100, 
+    message: "Too many accounts created from this IP, please try again after an hour"
+  }),
   body("username")
     .exists().withMessage("username is required")
     .isLength({ min: 8 }).withMessage("username minimum 8 characters"),
@@ -54,6 +58,11 @@ router.post(
 
 router.put(
   "/update-password",
+  rateLimit({
+    windowMs: 60 * 60 * 1000, 
+    max: 100, 
+    message: "Too many accounts created from this IP, please try again after an hour"
+  }),
   tokenMiddleware.auth,
   body("password")
     .exists().withMessage("password is required")
@@ -87,6 +96,11 @@ router.get(
 router.post(
   "/favorites",
   tokenMiddleware.auth,
+  rateLimit({
+    windowMs: 60 * 60 * 1000, 
+    max: 100, 
+    message: "Too many accounts created from this IP, please try again after an hour"
+  }),
   body("mediaType")
     .exists().withMessage("mediaType is required")
     .custom(type => ["movie", "tv"].includes(type)).withMessage("mediaType invalid"),
